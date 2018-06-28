@@ -1,0 +1,11 @@
+{
+    "AppPath": "/PHP_MVC",
+    
+    "DefaultDb":{
+        "Server" : "some_server",
+        "Type" : "mysql",
+        "User": "some_user",
+        "Pwd": "",
+        "Name" : "some_database"
+    }
+}
