@@ -1,5 +1,5 @@
 ﻿<?php
-    $ViewBag->Title = "Index";
+    $this->ViewBag->Title = "Index";
 ?>
 <div class="jumbotron">
     <h1>PHP MVC</h1>
