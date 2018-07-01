@@ -16,12 +16,12 @@ function RenderSection($name, $required)
 }
 
 class HTML{
-    public function ActionLink($LinekText, $Action, $Controller, $htmlAttributes = "")
+    public static function ActionLink($LinekText, $Action, $Controller, $htmlAttributes = "")
     {
         echo "<a href=\"".Application::$AppData->AppPath."/$Controller/$Action\" $htmlAttributes>$LinekText</a>\n";
     }
 
-    public function ContentUrl($vpath)
+    public static  function ContentUrl($vpath)
     {
         echo Application::$AppData->AppPath."/".$vpath;
     }

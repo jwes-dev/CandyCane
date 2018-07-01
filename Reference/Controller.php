@@ -3,13 +3,13 @@ class Controller
 {
     public function __construct()
     {
+        $this->ViewBag = new \stdClass();
     }
 
     public function View($ViewName = "")
     {
-        global $ViewBag;
         global $HTML;
-        $ViewBag->Title = Context::$Method;
+        $this->ViewBag->Title = Context::$Method;
         if($ViewName == "")
             Context::$ViewName .= "/".Context::$Controller."/".Context::$Method.".php";
         else
@@ -55,5 +55,4 @@ class Controller
         return $obj; 
     }
 }
-$ViewBag = new \stdClass();
 ?>
