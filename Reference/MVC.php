@@ -38,23 +38,26 @@ class Server
 
 
 
-function AR($path)
+class R
 {
-    if (substr($path, 0, 2) == "~/" && strlen($path) == 2)
-        return Application::$AppData->AppPath;
-    else if (substr($path, 0, 2) == "~/")
-        return Application::$AppData->AppPath . "/" . substr($path, 2);
-    else
-        return $Context->WorkingDir;
-}
+    public static function App($path)
+    {
+        if (substr($path, 0, 2) == "~/" && strlen($path) == 2)
+            return Application::$AppData->AppPath;
+        else if (substr($path, 0, 2) == "~/")
+            return Application::$AppData->AppPath . "/" . substr($path, 2);
+        else
+            return $Context->WorkingDir;
+    }
 
-function FR($path)
-{
-    if (substr($path, 0, 2) == "~/" && strlen($path) == 2)
-        return Application::$AppData->AppPath;
-    else if (substr($path, 0, 2) == "~/")
-        return Application::$AppData->AppPath . "/" . substr($path, 2);
-    else
-        return $Context->WorkingDir;
+    public static function File($path)
+    {
+        if (substr($path, 0, 2) == "~/" && strlen($path) == 2)
+            return Application::$AppData->AppPath;
+        else if (substr($path, 0, 2) == "~/")
+            return Application::$AppData->AppPath . "/" . substr($path, 2);
+        else
+            return $Context->WorkingDir;
+    }
 }
 ?>

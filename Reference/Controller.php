@@ -34,25 +34,13 @@ class Controller
         echo json_encode($obj);
     }
 
-    public function get_GET($obj)
-    {
-        $reflect = new ReflectionClass($obj);
-        $props = $reflect->getProperties(ReflectionProperty::IS_PUBLIC);
-        foreach ($props as $prop) {
-            $prop->setValue($obj, $_GET[$prop->getName()]);
-        }
-        return $obj;
-    }
+}
 
-    public function get_POST($obj)
+class View
+{
+    public function __construct()
     {
-        $reflect = new ReflectionClass($obj);
-        $props = $reflect->getProperties(ReflectionProperty::IS_PUBLIC);
-        foreach ($props as $prop) {
-            $prop->setValue($obj, $_POST[$prop->getName()]);
-            //print $prop->getName();
-        }
-        return $obj; 
+
     }
 }
 ?>
