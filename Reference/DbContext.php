@@ -8,9 +8,9 @@ class DbContext
             $this->db = new PDO($DbConn->Type.":host=".$DbConn->Server.";dbname=".$DbConn->Name,$DbConn->User, $DbConn->Pwd);
         } catch (PDOException $e) {
             Response::SetStatusCodeResult(500, "Internal Server Error");
-            exit;
+            exit;        
+            $this->TablePrefix = $TablePrefix;
         }
-        $this->TablePrefix = $TablePrefix;
     }
 
     public function __get($name)
@@ -56,11 +56,22 @@ class DbSet
             $this->fields .= $prop->getName().",";
             $this->values .= ":".$prop->getName().",";
             if($prop->getName() != $this->KeyCol)
-                $this->updt .= $prop->getName()."=:".$prop->getName().",";
+                $this->updt .= $prop->getName()."= :".$prop->getName().",";
         }
         $this->fields = substr($this->fields, 0, strlen($this->fields) - 1);
         $this->values = substr($this->values, 0, strlen($this->values) - 1);
         $this->updt = substr($this->updt, 0, strlen($this->updt) - 1);
+    }
+
+    public function GetRange($start = 0, $length = 5)
+    {
+        $length += $start;
+        return $this->db->query("SELECT * FROM $this->table LIMIT $start, $length");
+    }
+
+    public function Table()
+    {
+        return $this->db->query("SELECT * FROM $this->table");
     }
 
     public function Add($obj)
