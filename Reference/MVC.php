@@ -5,7 +5,7 @@ class Application
 
     public static function Init()
     {
-        Application::$AppData = json_decode(file_get_contents("App.config.json"));
+        Application::$AppData = json_decode(file_get_contents("App.Config.json"));
         Application::$AppData->ServerPath = $_SERVER["DOCUMENT_ROOT"].Application::$AppData->AppPath;
     }
 }
