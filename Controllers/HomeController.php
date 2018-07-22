@@ -19,16 +19,5 @@ class HomeController extends Controller
     {
         $this->View();
     }
-
-    public function Install()
-    {
-        $Acc = new AccountHelper();
-        if($Acc->SignUp("admin@mbl.com", "admin@1234!!"))
-        {
-            $Acc->AddToRoles("admin@mbl.com", array("admin"));
-            Response::Redirect("~/Account/Login");
-        }
-        echo "failed";
-    }
 }
 ?>
