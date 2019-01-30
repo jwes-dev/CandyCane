@@ -1,17 +1,21 @@
 <?php
 
-class ExampleModel
+class UserId
 {
+    /** VARCHAR(255)
+    NOT NULL
+    */
     public $Name;
-    public $Age;
-    public $DOB;
 
-    public function MVC_SetTypes()
-    {
-        settype($Name, "string");
-        settype($Age, "string");
-        settype($DOB, "string");
-    }
+    /** INTEGER
+    NOT NULL
+    */
+    public $Age;
+
+    /** DATE
+    NOT NULL
+    */
+    public $DOB;
 }
 
 ?>
