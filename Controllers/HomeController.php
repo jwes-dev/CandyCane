@@ -6,7 +6,6 @@ class HomeController extends Controller
      */
     public function Index()
     {
-        $db = new AppDbContext();
         $this->View();
     }
 
