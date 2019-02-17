@@ -8,8 +8,11 @@ form: friendlyName => [
     "Default_Parameter_Name"
     ]
 */
-    define("ROUTES", array(
-         "default" => ["/", "/", "Home", "Index", "ID"],
+class RouteConfig
+{
+    public static $Routes = array(
+        "default" => ["/", "/", "Settings", "Config", "ID"],
         "api" => ["/MyApi/", "/Area/StudentApi/", "Home", "Index", "ID"]
-    ));
+    );
+}
 ?>
