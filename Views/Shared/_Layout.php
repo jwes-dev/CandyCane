@@ -6,7 +6,7 @@
     <title><?= $this->ViewBag->Title ?> - My PHP MVC</title>
     <?php
         RenderStyle("bootstrap");
-        RenderStyle("site");
+        RenderStyle("Site");
     ?>
 </head>
 <body>
