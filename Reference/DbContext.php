@@ -99,12 +99,12 @@ class DbSet
     {
         if($column == "")
         {
-            $FindConn = $this->db->prepare("SELECT * FROM ".$this->table." WHERE $this->KeyCol = :$column");
-            $FindConn->bindParam(':'.$this->KeyCol, $value);
+            $FindConn = $this->db->prepare("SELECT * FROM ".$this->table." WHERE $this->KeyCol = :column");
+            $FindConn->bindParam(':column', $value);
         }
         else{
-            $FindConn = $this->db->prepare("SELECT * FROM ".$this->table." WHERE $column = :$column");
-            $FindConn->bindParam(':'.$column, $value);
+            $FindConn = $this->db->prepare("SELECT * FROM ".$this->table." WHERE $column = :column");
+            $FindConn->bindParam(':column', $value);
         }
         $FindConn->execute();
 

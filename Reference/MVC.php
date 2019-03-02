@@ -53,9 +53,9 @@ class R
     public static function File($path)
     {
         if (substr($path, 0, 2) == "~/" && strlen($path) == 2)
-            return Application::$AppData->AppPath;
+            return Application::$AppData->ServerPath;
         else if (substr($path, 0, 2) == "~/")
-            return Application::$AppData->AppPath . "/" . substr($path, 2);
+            return Application::$AppData->ServerPath . "/" . substr($path, 2);
         else
             return $Context->WorkingDir;
     }

@@ -58,7 +58,7 @@ class Response
 class Request
 {
     public static $Url;
-    public function RequestData($obj)
+    public static function RequestData($obj)
     {
         $reflect = new ReflectionClass($obj);
         $props = $reflect->getProperties(ReflectionProperty::IS_PUBLIC);

@@ -16,9 +16,8 @@ function ResolveClassFilters($class)
                 return false;
             require_once R::File("~/Filters/".$f[0]."Filter.php");
             if(!class_exists($f[0]."Filter"))
-                return false;
+                return false;            
             $fil = $f[0]."Filter";
-            
             if(isset($f[1]))
             {
                 if(strlen($f[1]) > 0)
