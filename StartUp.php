@@ -8,11 +8,8 @@ spl_autoload_register(function ($class_name) {
 });
 date_default_timezone_set('UTC');
 
-require_once "Reference/Controller.php";
-require_once "Reference/Context.php";   
-require_once "Reference/Framework.php";
-require_once "Reference/IO.php";
-require_once "Reference/DbContext.php";
+require_once "Reference/Http.php";
+require_once "Reference/EntityFramework.php";
 require_once "Reference/MVC.php";
 require_once "Reference/Filters.php";
 
