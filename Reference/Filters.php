@@ -5,29 +5,30 @@ function ResolveClassFilters($class)
     $ref = new ReflectionClass($class);
     $comment = $ref->getDocComment();
     $attrs = explode("\n", trim(trim($comment, "/**")));
-    if(trim($attrs[0]) != "FILTERS")
-        return;    
     foreach($attrs as $attr)
     {
-        if(trim($attr) != "FILTERS")
+        $attr = explode(" ", trim($attr));
+        if(trim($attr) == "FILTER")
         {
-            $f = explode(" ", trim($attr), 2);
-            if(!file_exists(R::File("~/Filters/".$f[0]."Filter.php")))
-                return false;
-            require_once R::File("~/Filters/".$f[0]."Filter.php");
-            if(!class_exists($f[0]."Filter"))
-                return false;            
-            $fil = $f[0]."Filter";
-            if(isset($f[1]))
+            $fil = $attr[1]."Filter";
+            if(!class_exists($fil, false))
             {
-                if(strlen($f[1]) > 0)
-                    $filter = new $fil(json_decode($f[1]));
+                if(!file_exists(R::File("~/Filters/".$fil.".php")))
+                    die("EXEC_ERROR: filter class file missing");
+                require_once R::File("~/Filters/".$file.".php");
+                if(!class_exists($fil))
+                    die("EXEC_ERROR: filter class missing");
+            }
+            if(isset($attr[2]))
+            {
+                if(strlen($attr[2]) > 0)
+                    $filter = new $fil(json_decode($attr[2]));
             }
             else
                 $filter = new $fil();
-            return true;
         }
     }
+    return true;
 }
 
 function ResolveMethodFilters($class, $method)
@@ -35,29 +36,30 @@ function ResolveMethodFilters($class, $method)
     $ref = new ReflectionClass($class);
     $comment = $ref->getMethod($method)->getDocComment();
     $attrs = explode("\n", trim(trim($comment, "/**")));
-    if(trim($attrs[0]) != "FILTERS")
-        return;
     foreach($attrs as $attr)
     {
-        if(trim($attr) != "FILTERS")
+        $attr = explode(" ", trim($attr));
+        if(trim($attr[0]) == "FILTER")
         {
-            $f = explode(" ", trim($attr), 2);
-            if(!file_exists(R::File("~/Filters/".$f[0]."Filter.php")))
-                return false;
-            require_once R::File("~/Filters/".$f[0]."Filter.php");
-            if(!class_exists($f[0]."Filter"))
-                return false;
-            $fil = $f[0]."Filter";
-            if(isset($f[1]))
+            $fil = $attr[1]."Filter";
+            if(!class_exists($fil, false))
             {
-                if(strlen($f[1]) > 0)
-                    $filter = new $fil(json_decode($f[1]));
+                if(!file_exists(R::File("~/Filters/".$fil.".php")))
+                    die("EXEC_ERROR: filter class file missing");
+                require_once R::File("~/Filters/".$fil.".php");
+                if(!class_exists($fil))
+                    die("EXEC_ERROR: filter class missing");
+            }
+            if(isset($attr[2]))
+            {
+                if(strlen($attr[2]) > 0)
+                    $filter = new $fil(json_decode($attr[2]));
             }
             else
                 $filter = new $fil();
-            return true;
         }
     }
+    return true;
 }
 
 class Filter
@@ -65,6 +67,40 @@ class Filter
     public function __construct($args = null)
     {
         $this->OnBeforeExecute($args);
+    }
+}
+
+
+class POSTFilter extends Filter
+{
+    public function OnBeforeExecute($args)
+    {
+        if(Request::Method() !== 'POST')
+        {
+            Response::SetStatusCodeResult(404, "Not Found");
+        }
+    }
+}
+
+class GETFilter extends Filter
+{
+    public function OnBeforeExecute($args)
+    {
+        if(Request::Method() !== 'GET')
+        {
+            Response::SetStatusCodeResult(404, "Not Found");
+        }
+    }
+}
+
+class AntiForgeryFilter extends Filter
+{
+    public function OnBeforeExecute($args)
+    {
+        if(!HTTP::ValidateAntiforgeryToken())
+        {
+            Response::SetStatusCodeResult(400, "Bad Request");
+        }
     }
 }
 ?>

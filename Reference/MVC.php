@@ -42,9 +42,13 @@ class Application
 
 Application::Init();
 
+/**
+ * @param string $path a path on the application.
+ * @param mixed $data a data object to pass on to the pathREQUEST_METHOD
+ */
 class Server
 {
-    public static function MapPath($path, $data = null)
+    public static function MapPath(string $path, mixed $data = null)
     {
         $query = "";
         if($data != null)
