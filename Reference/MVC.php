@@ -19,7 +19,7 @@ function RenderSection($name, $required)
 class HTML{
     public static function ActionLink($LinkText, $Action, $Controller, $htmlAttributes = "")
     {
-        echo "<a href=\"".Application::$AppData->AppPath."/$Controller/$Action\" $htmlAttributes>$LinekText</a>\n";
+        echo "<a href=\"".Application::$AppData->AppPath."/$Controller/$Action\" $htmlAttributes>$LinkText</a>\n";
     }
 
     public static function ContentUrl($vpath)
@@ -42,9 +42,13 @@ class Application
 
 Application::Init();
 
+/**
+ * @param string $path a path on the application.
+ * @param mixed $data a data object to pass on to the pathREQUEST_METHOD
+ */
 class Server
 {
-    public static function MapPath($path, $data = null)
+    public static function MapPath(string $path, mixed $data = null)
     {
         $query = "";
         if($data != null)
