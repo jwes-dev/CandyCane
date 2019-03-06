@@ -5,9 +5,10 @@ class AuthorizeFilter extends Filter
     {
         if(!isset($_SESSION["Email"]))
         {
-            echo "email failed";
-            die();
-            Response::Redirect("~/Account/Login".(strlen(Request::$Url) > 0 ? "?url=".Request::$Url : ""));
+            if(FilterHelper::ResolveMethodFilters($this->Context) !== -1)
+                Response::Redirect("~/Account/Login".(strlen(Request::$Url) > 0 ? "?url=".Request::$Url : ""));
+            else
+                return true;
         }
         else if(FilterHelper::ResolveMethodFilters($this->Context) === -1)
         {
