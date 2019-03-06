@@ -71,16 +71,18 @@ class IdentityManager
         $User = $this->Db->IdentityRole->Find(md5($Email));
         if($User == null)
         {
-            return false;
+            $User = new IdentityRole();
+            $User->Id = md5($Email);
+            $User->Roles = "[]";
         }
         $roles = json_decode($User->Roles);
         if(!is_array($roles))
         {
             $roles = [];
         }
-        array_push($roles, $Roles);
+        $roles = array_merge_recursive($roles, $Roles);
         $User->Roles = json_encode($roles);
-        $this->Db->IdentityRole->Update($User);
+        $this->Db->IdentityRole->AddOrUpdate($User);
     }
 }
 ?>
