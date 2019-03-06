@@ -172,9 +172,9 @@ class DbSet
 
 class Context
 {
-    public static $Controller;
-    public static $Method;
-    public static $ViewName;
-    public static $WorkingDir;
+    public $Controller;
+    public $Method;
+    public $ViewName;
+    public $WorkingDir;
 }
 ?>

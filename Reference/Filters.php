@@ -1,70 +1,128 @@
 <?php
-
-function ResolveClassFilters($class)
+class FilterHelper
 {
-    $ref = new ReflectionClass($class);
-    $comment = $ref->getDocComment();
-    $attrs = explode("\n", trim(trim($comment, "/**")));
-    if(trim($attrs[0]) != "FILTERS")
-        return;    
-    foreach($attrs as $attr)
+    public static function ResolveFilters(Context $context)
     {
-        if(trim($attr) != "FILTERS")
-        {
-            $f = explode(" ", trim($attr), 2);
-            if(!file_exists(R::File("~/Filters/".$f[0]."Filter.php")))
-                return false;
-            require_once R::File("~/Filters/".$f[0]."Filter.php");
-            if(!class_exists($f[0]."Filter"))
-                return false;            
-            $fil = $f[0]."Filter";
-            if(isset($f[1]))
-            {
-                if(strlen($f[1]) > 0)
-                    $filter = new $fil(json_decode($f[1]));
-            }
-            else
-                $filter = new $fil();
-            return true;
-        }
+        FilterHelper::ResolveClassFilters($context);
+        FilterHelper::ResolveMethodFilters($context);
     }
-}
 
-function ResolveMethodFilters($class, $method)
-{
-    $ref = new ReflectionClass($class);
-    $comment = $ref->getMethod($method)->getDocComment();
-    $attrs = explode("\n", trim(trim($comment, "/**")));
-    if(trim($attrs[0]) != "FILTERS")
-        return;
-    foreach($attrs as $attr)
+    public static function ResolveClassFilters(Context $context)
     {
-        if(trim($attr) != "FILTERS")
-        {
-            $f = explode(" ", trim($attr), 2);
-            if(!file_exists(R::File("~/Filters/".$f[0]."Filter.php")))
-                return false;
-            require_once R::File("~/Filters/".$f[0]."Filter.php");
-            if(!class_exists($f[0]."Filter"))
-                return false;
-            $fil = $f[0]."Filter";
-            if(isset($f[1]))
-            {
-                if(strlen($f[1]) > 0)
-                    $filter = new $fil(json_decode($f[1]));
-            }
-            else
-                $filter = new $fil();
+        $class = $context->Controller."Controller";
+        $ref = new ReflectionClass($class);
+        $comment = $ref->getDocComment();
+        if(strlen($comment) < 1)
             return true;
+        $attrs = explode("\n", trim(trim($comment, "/**")));
+        foreach($attrs as $attr)
+        {
+            $attr = explode(" ", trim($attr));
+            if(trim($attr[0]) == "FILTER")
+            {
+                $fil = $attr[1]."Filter";
+                if(!class_exists($fil, false))
+                {
+                    if(!file_exists(R::File("~/Filters/".$fil.".php")))
+                        die("EXEC_ERROR: filter class file missing");
+                    require_once R::File("~/Filters/".$fil.".php");
+                    if(!class_exists($fil))
+                        die("EXEC_ERROR: filter class missing");
+                }
+                $args = null;
+                $filter = new $fil($context);
+                if(isset($attr[2]))
+                {
+                    if(strlen($attr[2]) > 0)
+                        $args = json_decode($attr[2]);
+                }
+                return $filter->Handle($args);
+            }
         }
+        return true;
+    }
+
+    public static function ResolveMethodFilters(Context $context)
+    {
+        $class = $context->Controller."Controller";
+        $method = $context->Method;
+        $ref = new ReflectionClass($class);
+        $comment = $ref->getMethod($method)->getDocComment();
+        if(strlen($comment) < 1)
+            return true;
+        $attrs = explode("\n", trim(trim($comment, "/**")));
+        foreach($attrs as $attr)
+        {
+            $attr = explode(" ", trim($attr));
+            if(trim($attr[0]) == "FILTER")
+            {
+                $fil = $attr[1]."Filter";
+                if(!class_exists($fil, false))
+                {
+                    if(!file_exists(R::File("~/Filters/".$fil.".php")))
+                        die("EXEC_ERROR: filter class file missing");
+                    require_once R::File("~/Filters/".$fil.".php");
+                    if(!class_exists($fil))
+                        die("EXEC_ERROR: filter class missing");
+                }
+                $args = null;
+                $filter = new $fil($context);
+                if(isset($attr[2]))
+                {
+                    if(strlen($attr[2]) > 0)
+                        $args = json_decode($attr[2]);
+                }
+                return $filter->Handle($args);
+            }
+        }
+        return true;
     }
 }
 
 class Filter
 {
-    public function __construct($args = null)
+    public function __construct(Context $context)
     {
-        $this->OnBeforeExecute($args);
+        $this->Context = $context;
+    }
+
+    public function Handle($args)
+    {
+        return $this->OnBeforeExecute($args);
+    }
+}
+
+
+class HTTPPOSTFilter extends Filter
+{
+    public function OnBeforeExecute($args)
+    {
+        if(Request::Method() !== 'POST')
+        {
+            Response::SetStatusCodeResult(404, "Not Found");
+        }
+    }
+}
+
+class HTTPGETFilter extends Filter
+{
+    public function OnBeforeExecute($args)
+    {
+        if(Request::Method() !== 'GET')
+        {
+            Response::SetStatusCodeResult(404, "Not Found");
+        }
+    }
+}
+
+class AntiForgeryFilter extends Filter
+{
+    public function OnBeforeExecute($args)
+    {
+        if(!HTTP::ValidateAntiforgeryToken())
+        {
+            Response::SetStatusCodeResult(400, "Bad Request");
+        }
     }
 }
 ?>

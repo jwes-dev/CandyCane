@@ -7,9 +7,15 @@ class HttpFileBase
         $this->FileKey = $fileName;
     }
 
-    public function SaveAs($fileKey, $path, $savename)
+    /**
+     * @param string $fileKey The input name of the file upload field
+     * @param string $path The patch in which the file is to be stored
+     * @param string $savename Name for the file to be saved as on the server
+     * Saves a file submitted with the form given by the $fileKey
+     */
+    public function SaveAs(string $fileKey, string $path, string $savename)
     {
-        move_uploaded_file($savenames, $path);
+        move_uploaded_file($savename, $path);
     }
 }
 
@@ -58,14 +64,57 @@ class Response
 class Request
 {
     public static $Url;
+
+    /**
+     * Gets the request type/method
+     */
+    public static function Method() : string
+    {
+        return $_SERVER["REQUEST_METHOD"];
+    }
+
+    /**
+     * @param $obj The object structure to search the form for
+     * Searches the request page for the data matching the given object structure and fills the object with the data if found and returns the object
+     */
     public static function RequestData($obj)
     {
         $reflect = new ReflectionClass($obj);
         $props = $reflect->getProperties(ReflectionProperty::IS_PUBLIC);
-        foreach ($props as $prop) {
+        foreach ($props as $prop) {            
             $prop->setValue($obj, $_REQUEST[$prop->getName()]);
         }
         return $obj;
+    }
+
+    /**
+     * @param string $Key Name of the header field
+     * returns the value of the specified header field
+     */
+    public static function Header(string $Key) : String{
+        $headers = getallheaders();
+        if($header == false)
+            return null;
+        return $headers[$Key];
+    }
+}
+
+
+class HTTP
+{
+    public static function AntiForgeryToken() : string
+    {
+        return "<input name=\"v1e4681fd36f5589e61de20cea0f6e535\" value=\"".password_hash($_SERVER["REMOTE_ADDR"] . " : " . $_SERVER["SERVER_ADDR"], PASSWORD_DEFAULT)."\" hidden />";
+    }
+
+    public static function ValidateAntiforgeryToken()
+    {
+        if(isset($_REQUEST["v1e4681fd36f5589e61de20cea0f6e535"]))
+        {
+            $token = $_REQUEST["v1e4681fd36f5589e61de20cea0f6e535"];
+            return password_verify($_SERVER["REMOTE_ADDR"] . " : " . $_SERVER["SERVER_ADDR"], $token);
+        }
+        return false;
     }
 }
 ?>

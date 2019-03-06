@@ -1,4 +1,5 @@
 <?php
+session_start();
 spl_autoload_register(function ($class_name) {
     if (file_exists(Application::$AppData->ServerPath . "/Models/$class_name.php"))
         require_once Application::$AppData->ServerPath . "/Models/$class_name.php";
@@ -19,8 +20,9 @@ require_once "App_Start/RouteConfig.php";
 
 
 $reqpath = strtok("/" . trim(substr($_SERVER["REQUEST_URI"], strlen(Application::$AppData->AppPath)), "/"), "?");
-Request::$Url = $_SERVER["REQUEST_URI"];
-Context::$ViewName = Application::$AppData->ServerPath;
+Request::$Url = trim(substr($_SERVER["REQUEST_URI"], strlen(Application::$AppData->AppPath)), "/");
+$Context = new Context();
+$Context->ViewName = Application::$AppData->ServerPath;
 foreach (RouteConfig::$Routes as $name => $path) {
     $cname = explode("/", substr($reqpath, strlen($path[0])));
     $find = Application::$AppData->ServerPath . $path[1] . "Controllers/$cname[0]Controller.php";
@@ -30,20 +32,19 @@ foreach (RouteConfig::$Routes as $name => $path) {
         $controller = "$cname[0]Controller";
         if (!class_exists($controller))
             Response::SetStatusCodeResult(404, "Not Found");
-        ResolveClassFilters($controller);
-        Context::$WorkingDir = $path[1];
-        Context::$Controller = $cname[0];
-        Context::$ViewName .= $path[1] . "Views";
+        $Context->WorkingDir = $path[1];
+        $Context->Controller = $cname[0];
+        $Context->ViewName .= $path[1] . "Views";
         if (isset($cname[1])) {
             $method = $cname[1];
             if (method_exists($controller, $method)) {
-                Context::$Method = $method;
+                $Context->Method = $method;
                 if (isset($cname[2]))
                     $_REQUEST[$path[4]] = $cname[2];
-                $cont = new $controller();
-                ResolveMethodFilters($controller, $method);
+                $cont = new $controller($Context);
                 if(method_exists($controller, "__Initialize__"))                
                     $cont->__Initialize__();
+                FilterHelper::ResolveFilters($Context);
                 $cont->$method();
                 exit;
             }
@@ -51,14 +52,14 @@ foreach (RouteConfig::$Routes as $name => $path) {
             $method = $path[3];
             if (method_exists($controller, $method)) {
                 // ony the controller name is given
-                Context::$Method = $method;
+                $Context->Method = $method;
                 // var_dump($Context);
                 if (isset($cname[2]))
                     $_REQUEST[$path[4]] = $cname[2];
-                $cont = new $controller();
-                ResolveMethodFilters($controller, $method);
+                $cont = new $controller($Context);
                 if(method_exists($controller, "__Initialize__"))                
                     $cont->__Initialize__();
+                FilterHelper::ResolveFilters($Context);
                 $cont->$method();
                 exit;
             }
@@ -74,18 +75,17 @@ foreach ($ROUTES as $n => $path) {
         require_once Application::$AppData->ServerPath . $path[1] . "Controllers/$controller.php";
         if (!class_exists($controller))
             Response::SetStatusCodeResult(404, "Not Found");
-        ResolveClassFilters($controller);
 
         $method = $path[3];
         if (method_exists($controller, $method)) {
-            Context::$WorkingDir = $path[1];
-            Context::$Controller = $path[2];
-            Context::$Method = $method;
-            Context::$ViewName .= $path[1] . "Views";
-            $cont = new $controller();
-            ResolveMethodFilters($controller, $method);
+            $Context->WorkingDir = $path[1];
+            $Context->Controller = $path[2];
+            $Context->Method = $method;
+            $Context->ViewName .= $path[1] . "Views";
+            $cont = new $controller($Context);
             if(method_exists($controller, "__Initialize__"))
                 $cont->__Initialize__();
+            FilterHelper::ResolveFilters($Context);
             $cont->$method();
             exit;
         }
