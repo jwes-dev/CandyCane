@@ -14,9 +14,10 @@ class FilterHelper
         $comment = $ref->getDocComment();
         if(strlen($comment) < 1)
             return true;
-        $attrs = explode("\n", trim(trim($comment, "/**")));
+        $attrs = explode("\n", trim(trim($comment, "/*")));
         foreach($attrs as $attr)
         {
+            $attr = trim(trim($attr, "/*"));
             $attr = explode(" ", trim($attr));
             if(trim($attr[0]) == "FILTER")
             {
@@ -50,9 +51,10 @@ class FilterHelper
         $comment = $ref->getMethod($method)->getDocComment();
         if(strlen($comment) < 1)
             return true;
-        $attrs = explode("\n", trim(trim($comment, "/**")));
+        $attrs = explode("\n", trim(trim($comment, "/*")));
         foreach($attrs as $attr)
         {
+            $attr = trim(trim($attr, "/*"));
             $attr = explode(" ", trim($attr));
             if(trim($attr[0]) == "FILTER")
             {
