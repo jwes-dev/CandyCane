@@ -79,6 +79,28 @@ class FilterHelper
         }
         return true;
     }
+
+    public static function DoesMethodHaveFilter(string $FilterName, $context)
+    {
+        $class = $context->Controller."Controller";
+        $method = $context->Method;
+        $ref = new ReflectionClass($class);
+        $comment = $ref->getMethod($method)->getDocComment();
+        if(strlen($comment) < 1)
+            return false;
+        $attrs = explode("\n", trim(trim($comment, "/*")));
+        foreach($attrs as $attr)
+        {
+            $attr = trim(trim($attr, "/*"));
+            $attr = explode(" ", trim($attr));
+            if(trim($attr[0]) == "FILTER")
+            {
+                if($attr[1] === $FilterName)
+                    return true;
+            }
+        }
+        return false;
+    }
 }
 
 class Filter

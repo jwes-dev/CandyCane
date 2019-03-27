@@ -5,12 +5,12 @@ class AuthorizeFilter extends Filter
     {
         if(!isset($_SESSION["Email"]))
         {
-            if(FilterHelper::ResolveMethodFilters($this->Context) !== -1)
+            if(!FilterHelper::DoesMethodHaveFilter("AllowAnonymous", $this->Context))
                 Response::Redirect("~/Account/Login".(strlen(Request::$Url) > 0 ? "?url=".Request::$Url : ""));
             else
                 return true;
         }
-        else if(FilterHelper::ResolveMethodFilters($this->Context) === -1)
+        else if(!FilterHelper::DoesMethodHaveFilter("AllowAnonymous", $this->Context))
         {
             return true;
         }
