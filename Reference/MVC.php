@@ -8,7 +8,7 @@ function RenderSection($name, $required)
         if(function_exists($name))
             $name();
         else
-            die("ERROR: Call to undefuned section: ".$name);
+            echo "FATAL ERROR: Call to undefuned section: ".$name;
     }
     else{
         if(function_exists($name))
@@ -97,31 +97,30 @@ class R
 
 class Controller
 {
-    public function __construct($context)
+    public function __construct()
     {
         $this->ViewBag = new \stdClass();
-        $this->Context = $context;
     }
 
     public function View($ViewName = "")
     {
         global $HTML;
-        $this->ViewBag->Title = $this->Context->Method;
+        $this->ViewBag->Title = Context::$Method;
         if($ViewName == "")
-            $this->Context->ViewName .= "/".$this->Context->Controller."/".$this->Context->Method.".php";
+            Context::$ViewName .= "/".Context::$Controller."/".Context::$Method.".php";
         else
-            $this->Context->ViewName .= "/".$ViewName;
+            Context::$ViewName .= "/".$ViewName;
         $ViewPage = "";
         ob_start();
-        require_once $this->Context->ViewName;
+        require_once Context::$ViewName;
         $ViewPage = ob_get_contents();
         ob_end_clean();
         if(!isset($thos->Layout))
         {
-            require_once Application::$AppData->ServerPath.$this->Context->WorkingDir."Views/_ViewStart.php";
+            require_once Application::$AppData->ServerPath.Context::$WorkingDir."Views/_ViewStart.php";
         }
         else{
-            require_once FILES_Application::$AppData->ServerPathROOT.$this->Context->WorkingDir.$this->Layout;
+            require_once FILES_Application::$AppData->ServerPathROOT.Context::$WorkingDir.$this->Layout;
         }
     }
 
